@@ -1,8 +1,9 @@
-use rocket::{Rocket, Build};
-use crate::routes::TimesheetsRoutesInitialized;
-use crate::routes::routes;
+use rocket::Rocket;
 
-impl TimesheetsRoutesInitialized for Rocket<Build> {
+use crate::routes::routes;
+use crate::routes::TimesheetsRoutesInitialized;
+
+impl TimesheetsRoutesInitialized for Rocket {
     fn mount_timesheet_routes(self) -> Self {
         self.mount("/api-v1", routes![
             routes::login,

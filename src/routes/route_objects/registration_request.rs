@@ -1,7 +1,6 @@
-use rocket::serde::Deserialize;
+use serde::Deserialize;
 
 #[derive(Deserialize, Debug, Clone)]
-#[serde(crate = "rocket::serde")]
 pub struct RegistrationRequest<'a> {
     #[serde(rename = "login")]
     pub login: &'a str,

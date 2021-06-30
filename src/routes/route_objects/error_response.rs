@@ -1,19 +1,32 @@
-use rocket::serde::{Serialize};
+use rocket::{Request, Response};
+use rocket::http::{ContentType, Status};
+use rocket::response::{Responder, Result};
+use rocket_contrib::json::Json;
 
-#[derive(Serialize)]
-#[serde(crate = "rocket::serde")]
+#[derive(Copy, Clone)]
 pub struct ErrorResponse<'a> {
-    pub message: &'a str,
-    pub code: i16,
+    cause: &'a str,
+    status: Status,
+}
+
+
+impl<'r> Responder<'r> for ErrorResponse<'r> {
+    fn respond_to(self, request: &Request) -> Result<'r> {
+        if let Ok(response) = Json(json!({"error": self.cause})).respond_to(request) {
+            Response::build_from(response).status(self.status).header(ContentType::JSON).ok()
+        } else {
+            Response::build().status(Status::InternalServerError).header(ContentType::JSON).ok()
+        }
+    }
 }
 
 // common errors
-pub const ERROR_UNKNOWN: &'static ErrorResponse<'static> = &ErrorResponse { message: "something went wrong", code: 500 };
-pub const ERROR_WRONG_REQUEST: &'static ErrorResponse<'static> = &ErrorResponse { message: "wrong request", code: 501 };
+pub const ERROR_UNKNOWN: &'static ErrorResponse<'static> = &ErrorResponse { cause: "unknown", status: Status::InternalServerError };
+pub const ERROR_WRONG_REQUEST: &'static ErrorResponse<'static> = &ErrorResponse { cause: "wrong_request", status: Status::BadRequest };
 
 // login error
-pub const ERROR_USER_NOT_FOUND: &'static ErrorResponse<'static> = &ErrorResponse { message: "user not found", code: 200 };
+pub const ERROR_USER_NOT_FOUND: &'static ErrorResponse<'static> = &ErrorResponse { cause: "user_not_found", status: Status::BadRequest };
 
 // registration error
-pub const ERROR_WEAK_PASSWORD: &'static ErrorResponse<'static> = &ErrorResponse { message: "weak password", code: 210 };
-pub const ERROR_ALREADY_REGISTERED: &'static ErrorResponse<'static> = &ErrorResponse { message: "already registered", code: 211 };
+pub const ERROR_WEAK_PASSWORD: &'static ErrorResponse<'static> = &ErrorResponse { cause: "weak_password", status: Status::BadRequest };
+pub const ERROR_ALREADY_REGISTERED: &'static ErrorResponse<'static> = &ErrorResponse { cause: "already_registered", status: Status::BadRequest };
