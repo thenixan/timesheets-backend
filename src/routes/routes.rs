@@ -22,13 +22,13 @@ pub fn login(maybe_login_request: Option<Json<LoginRequest>>, db: database::Conn
 }
 
 #[post("/registration", format = "json", data = "<maybe_registration_request>")]
-pub fn registration(maybe_registration_request: Option<Json<RegistrationRequest>>) -> ApiResponse<'static, ()> {
+pub fn registration(maybe_registration_request: Option<Json<RegistrationRequest>>, db: database::Conn) -> ApiResponse<'static, ()> {
     let call_chain = maybe_registration_request
-        .map(|r| authentication::registration::registration(&r.login, &r.password));
+        .map(|r| authentication::registration::registration(&r.login, &r.password, db));
     return match call_chain {
-        Some(None) => ApiResponse::Ok(()),
-        Some(Some(RegistrationError::LoginInUse)) => ApiResponse::Err(ERROR_ALREADY_REGISTERED),
-        Some(Some(RegistrationError::WeakPassword)) => ApiResponse::Err(ERROR_WEAK_PASSWORD),
+        Some(Ok(_)) => ApiResponse::Ok(()),
+        Some(Err(RegistrationError::LoginInUse)) => ApiResponse::Err(ERROR_ALREADY_REGISTERED),
+        Some(Err(RegistrationError::WeakPassword)) => ApiResponse::Err(ERROR_WEAK_PASSWORD),
         None => ApiResponse::Err(ERROR_WRONG_REQUEST),
         _ => ApiResponse::Err(ERROR_UNKNOWN),
     };

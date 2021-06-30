@@ -1,7 +1,5 @@
 use crate::database;
-use crate::handlers::authentication::login::LoginError::{NotFound, Other};
 use crate::database::{AuthorizationDatabase, AuthorizationOutcome};
-use crate::handlers::authentication::registration::RegistrationError::LoginInUse;
 
 pub type Token = String;
 

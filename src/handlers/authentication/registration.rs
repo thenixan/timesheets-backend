@@ -1,3 +1,6 @@
+use crate::database;
+use crate::database::{AuthorizationDatabase, RegistrationOutcome};
+
 pub type Token = String;
 
 pub enum RegistrationError {
@@ -6,13 +9,11 @@ pub enum RegistrationError {
     Other,
 }
 
-pub fn registration(login: &str, password: &str) -> Option<RegistrationError> {
-    //TODO changeme
-    if login == "thenixan" {
-        Some(RegistrationError::LoginInUse)
-    } else if password.len() < 8 {
-        Some(RegistrationError::WeakPassword)
-    } else {
-        None
+pub fn registration(login: &str, password: &str, db: database::Conn) -> Result<(), RegistrationError> {
+    match db.registration(login, password) {
+        RegistrationOutcome::Ok => Ok(()),
+        RegistrationOutcome::AlreadyInUse => Err(RegistrationError::LoginInUse),
+        RegistrationOutcome::WeakPassword => Err(RegistrationError::WeakPassword),
+        _ => Err(RegistrationError::Other)
     }
 }

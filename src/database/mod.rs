@@ -31,6 +31,14 @@ impl TimesheetsDatabaseInitialized for Rocket {
 
 pub trait AuthorizationDatabase {
     fn login(&self, login: &str, password: &str) -> AuthorizationOutcome;
+    fn registration(&self, login: &str, password: &str) -> RegistrationOutcome;
+}
+
+pub enum RegistrationOutcome {
+    Ok,
+    AlreadyInUse,
+    WeakPassword,
+    Other,
 }
 
 pub enum AuthorizationOutcome {
