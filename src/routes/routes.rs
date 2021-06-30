@@ -1,5 +1,6 @@
 use rocket_contrib::json::Json;
 
+use crate::database;
 use crate::handlers::authentication;
 use crate::handlers::authentication::login::LoginError;
 use crate::handlers::authentication::registration::RegistrationError;
@@ -9,9 +10,9 @@ use crate::routes::route_objects::login_request::LoginRequest;
 use crate::routes::route_objects::registration_request::RegistrationRequest;
 
 #[post("/login", format = "json", data = "<maybe_login_request>")]
-pub fn login(maybe_login_request: Option<Json<LoginRequest>>) -> ApiResponse<'static, String> {
+pub fn login(maybe_login_request: Option<Json<LoginRequest>>, db: database::Conn) -> ApiResponse<'static, String> {
     let call_chain = maybe_login_request
-        .map(|r| authentication::login::login(r.login, r.password));
+        .map(|r| authentication::login::login(r.login, r.password, db));
     return match call_chain {
         Some(Ok(token)) => ApiResponse::Ok(token),
         Some(Err(LoginError::NotFound)) => ApiResponse::Err(ERROR_USER_NOT_FOUND),

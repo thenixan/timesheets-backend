@@ -1,3 +1,5 @@
+pub mod authorization;
+
 use rocket::Rocket;
 use rocket_contrib::databases::diesel;
 use rocket::fairing::AdHoc;
@@ -25,4 +27,14 @@ impl TimesheetsDatabaseInitialized for Rocket {
                 return Ok(r);
             }))
     }
+}
+
+pub trait AuthorizationDatabase {
+    fn login(&self, login: &str, password: &str) -> AuthorizationOutcome;
+}
+
+pub enum AuthorizationOutcome {
+    Ok(String),
+    NotFound,
+    Other,
 }

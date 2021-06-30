@@ -1,6 +1,8 @@
 #![feature(decl_macro)]
 
 #[macro_use]
+extern crate diesel;
+#[macro_use]
 extern crate diesel_migrations;
 #[macro_use]
 extern crate rocket;
@@ -15,6 +17,7 @@ mod routes;
 pub mod handlers;
 pub mod database;
 mod config;
+mod schema;
 
 
 fn main() {
