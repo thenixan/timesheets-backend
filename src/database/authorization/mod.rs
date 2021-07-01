@@ -23,6 +23,7 @@ impl AuthorizationDatabase for Conn {
         match users::table.filter(users::username.eq(login.to_lowercase())).get_result::<User>(&self.0) {
             Ok(user) => {
                 if user.secret == password {
+                    //TODO token!!!!
                     AuthorizationOutcome::Ok(user.id.to_string())
                 } else {
                     AuthorizationOutcome::NotFound
