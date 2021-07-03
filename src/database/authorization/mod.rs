@@ -20,7 +20,9 @@ pub struct NewUser<'a> {
 
 impl AuthorizationDatabase for Conn {
     fn login(&self, login: &str, password: &str) -> AuthorizationOutcome {
-        match users::table.filter(users::username.eq(login.to_lowercase())).get_result::<User>(&self.0) {
+        match users::table
+            .filter(users::username.eq(login.to_lowercase()))
+            .get_result::<User>(&self.0) {
             Ok(user) => {
                 if user.secret == password {
                     //TODO token!!!!
