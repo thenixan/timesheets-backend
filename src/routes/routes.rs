@@ -12,10 +12,10 @@ use crate::routes::route_objects::login_request::LoginRequest;
 use crate::routes::route_objects::registration_request::RegistrationRequest;
 
 #[post("/login", format = "json", data = "<maybe_login_request>")]
-pub fn login(
+pub fn login<'r>(
     maybe_login_request: Option<Json<LoginRequest>>,
     db: database::Conn,
-) -> Result<String, &ErrorResponse> {
+) -> Result<String, ErrorResponse<'r>> {
     let call_chain =
         maybe_login_request.map(|r| authentication::login::login(r.login, r.password, db));
     return match call_chain {
@@ -31,10 +31,10 @@ pub fn login(
     format = "json",
     data = "<maybe_registration_request>"
 )]
-pub fn registration(
+pub fn registration<'r>(
     maybe_registration_request: Option<Json<RegistrationRequest>>,
     db: database::Conn,
-) -> Result<(), &ErrorResponse> {
+) -> Result<(), ErrorResponse<'r>> {
     let call_chain = maybe_registration_request
         .map(|r| authentication::registration::registration(&r.login, &r.password, db));
     return match call_chain {

@@ -1,8 +1,8 @@
-pub mod authorization;
-
 use rocket::fairing::AdHoc;
 use rocket::Rocket;
 use rocket_contrib::databases::diesel;
+
+pub mod authorization;
 
 #[database("diesel_postgres_pool")]
 pub struct Conn(diesel::PgConnection);
@@ -26,11 +26,6 @@ impl TimesheetsDatabaseInitialized for Rocket {
                 return Ok(r);
             }))
     }
-}
-
-pub trait AuthorizationDatabase {
-    fn login(&self, login: &str, password: &str) -> AuthorizationOutcome;
-    fn registration(&self, login: &str, password: &str) -> RegistrationOutcome;
 }
 
 pub enum RegistrationOutcome {
