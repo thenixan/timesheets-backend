@@ -14,8 +14,6 @@ pub fn from_env() -> Config {
         .parse::<u16>()
         .expect("PORT environment variable should parse to an integer");
 
-    let salt = env::var("SALT").expect("SALT env variable should be set");
-
     let mut database_config = HashMap::new();
     let mut databases = HashMap::new();
     let database_url =
@@ -27,7 +25,6 @@ pub fn from_env() -> Config {
         .environment(environment)
         .port(port)
         .extra("databases", databases)
-        .extra("salt", salt)
         .finalize()
         .unwrap()
 }

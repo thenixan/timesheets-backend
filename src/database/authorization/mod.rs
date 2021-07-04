@@ -29,12 +29,15 @@ pub fn login(db: &diesel::PgConnection, login: &str, password: &str) -> Authoriz
     {
         Ok(user) => {
             let argon2 = Argon2::default();
-            let parsed_hash = PasswordHash::new(&user.secret).unwrap();
-            if argon2
-                .verify_password(password.as_bytes(), &parsed_hash)
-                .is_ok()
-            {
-                AuthorizationOutcome::Ok(user.id.to_string())
+            if let Ok(parsed_hash) = PasswordHash::new(&user.secret) {
+                if argon2
+                    .verify_password(password.as_bytes(), &parsed_hash)
+                    .is_ok()
+                {
+                    AuthorizationOutcome::Ok(user.id.to_string())
+                } else {
+                    AuthorizationOutcome::NotFound
+                }
             } else {
                 AuthorizationOutcome::NotFound
             }
