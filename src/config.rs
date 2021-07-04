@@ -2,8 +2,8 @@ use std::collections::HashMap;
 use std::env;
 
 use dotenv::dotenv;
-use rocket::Config;
 use rocket::config::{Environment, Value};
+use rocket::Config;
 
 pub fn from_env() -> Config {
     dotenv().ok();
@@ -13,7 +13,6 @@ pub fn from_env() -> Config {
         .unwrap_or_else(|_| "8000".to_string())
         .parse::<u16>()
         .expect("PORT environment variable should parse to an integer");
-
 
     let mut database_config = HashMap::new();
     let mut databases = HashMap::new();

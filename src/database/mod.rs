@@ -1,12 +1,11 @@
 pub mod authorization;
 
+use rocket::fairing::AdHoc;
 use rocket::Rocket;
 use rocket_contrib::databases::diesel;
-use rocket::fairing::AdHoc;
 
 #[database("diesel_postgres_pool")]
 pub struct Conn(diesel::PgConnection);
-
 
 pub trait TimesheetsDatabaseInitialized {
     fn manage_database(self) -> Self;

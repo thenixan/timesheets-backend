@@ -9,11 +9,15 @@ pub enum RegistrationError {
     Other,
 }
 
-pub fn registration(login: &str, password: &str, db: database::Conn) -> Result<(), RegistrationError> {
+pub fn registration(
+    login: &str,
+    password: &str,
+    db: database::Conn,
+) -> Result<(), RegistrationError> {
     match db.registration(login, password) {
         RegistrationOutcome::Ok => Ok(()),
         RegistrationOutcome::AlreadyInUse => Err(RegistrationError::LoginInUse),
         RegistrationOutcome::WeakPassword => Err(RegistrationError::WeakPassword),
-        _ => Err(RegistrationError::Other)
+        _ => Err(RegistrationError::Other),
     }
 }
