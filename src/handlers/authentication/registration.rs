@@ -12,7 +12,7 @@ pub enum RegistrationError {
 pub fn registration(
     login: &str,
     password: &str,
-    db: database::Conn,
+    db: database::DatabaseConnection,
 ) -> Result<(), RegistrationError> {
     match database::authorization::registration(&*db, login, password) {
         RegistrationOutcome::Ok => Ok(()),
