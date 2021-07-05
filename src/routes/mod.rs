@@ -1,4 +1,4 @@
-mod route_objects;
+pub mod route_objects;
 mod routes;
 mod routes_setup;
 

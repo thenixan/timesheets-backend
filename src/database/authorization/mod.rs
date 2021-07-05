@@ -1,11 +1,12 @@
-use argon2::password_hash::SaltString;
 use argon2::{Argon2, PasswordHash, PasswordHasher, PasswordVerifier};
-use diesel::prelude::*;
+use argon2::password_hash::SaltString;
 use diesel::{ExpressionMethods, QueryDsl};
-use rand_core::OsRng;
+use diesel::prelude::*;
+use rand_core::{OsRng, RngCore};
 use uuid::Uuid;
 
 use crate::database::{AuthorizationOutcome, RegistrationOutcome};
+use crate::schema::tokens;
 use crate::schema::users;
 
 #[derive(Queryable, PartialEq, Debug)]
@@ -22,6 +23,13 @@ pub struct NewUser<'a> {
     pub secret: &'a str,
 }
 
+#[derive(Insertable, PartialEq, Debug)]
+#[table_name = "tokens"]
+pub struct NewToken<'a> {
+    pub token: &'a str,
+    pub user_id: &'a Uuid,
+}
+
 pub fn login(db: &diesel::PgConnection, login: &str, password: &str) -> AuthorizationOutcome {
     match users::table
         .filter(users::username.eq(login.to_lowercase()))
@@ -34,7 +42,23 @@ pub fn login(db: &diesel::PgConnection, login: &str, password: &str) -> Authoriz
                     .verify_password(password.as_bytes(), &parsed_hash)
                     .is_ok()
                 {
-                    AuthorizationOutcome::Ok(user.id.to_string())
+                    let mut token_bytes = [0u8; 32];
+                    rand_core::OsRng.fill_bytes(&mut token_bytes);
+                    let token_string = base64::encode(token_bytes);
+                    let token_entry = NewToken {
+                        token: &token_string,
+                        user_id: &user.id,
+                    };
+                    match diesel::insert_into(tokens::table)
+                        .values(token_entry)
+                        .execute(db)
+                    {
+                        Ok(_) => AuthorizationOutcome::Ok(token_string),
+                        Err(e) => {
+                            eprintln!("Error inserting token: {}", e);
+                            AuthorizationOutcome::Other
+                        }
+                    }
                 } else {
                     AuthorizationOutcome::NotFound
                 }

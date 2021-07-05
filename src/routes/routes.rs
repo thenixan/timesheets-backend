@@ -9,17 +9,22 @@ use crate::routes::route_objects::error_response::{
     ERROR_WEAK_PASSWORD, ERROR_WRONG_REQUEST,
 };
 use crate::routes::route_objects::login_request::LoginRequest;
+use crate::routes::route_objects::login_response::LoginResponse;
 use crate::routes::route_objects::registration_request::RegistrationRequest;
 
 #[post("/login", format = "json", data = "<maybe_login_request>")]
 pub fn login<'r>(
     maybe_login_request: Option<Json<LoginRequest>>,
     db: database::Conn,
-) -> Result<String, ErrorResponse<'r>> {
+) -> Result<Json<LoginResponse>, ErrorResponse<'r>> {
     let call_chain =
         maybe_login_request.map(|r| authentication::login::login(r.login, r.password, db));
     return match call_chain {
-        Some(Ok(token)) => Result::Ok(token),
+        Some(Ok(token)) => {
+            let login_response = LoginResponse::from(token);
+            let json_response = Json(login_response);
+            Result::Ok(json_response)
+        }
         Some(Err(LoginError::NotFound)) => Result::Err(ERROR_USER_NOT_FOUND),
         None => Result::Err(ERROR_WRONG_REQUEST),
         _ => Result::Err(ERROR_UNKNOWN),

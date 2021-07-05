@@ -15,6 +15,7 @@ uuid = { version = "0.8.2", features = ["serde", "v4"] }
 dotenv = "0.15.0"
 argon2 = "0.2.1"
 rand_core = { version = "0.6", features = ["std"] }
+base64 = "0.13.0"
 
 [dependencies.rocket_contrib]
 version = "0.4.7"

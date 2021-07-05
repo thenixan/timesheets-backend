@@ -905,6 +905,7 @@ name = "timesheets_api"
 version = "0.1.0"
 dependencies = [
  "argon2",
+ "base64 0.13.0",
  "diesel",
  "diesel_migrations",
  "dotenv",
