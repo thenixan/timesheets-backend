@@ -16,6 +16,7 @@ dotenv = "0.15.0"
 argon2 = "0.2.1"
 rand_core = { version = "0.6", features = ["std"] }
 base64 = "0.13.0"
+bson = "1.2.2"
 mongodb = { version = "1.2", features = ["sync"], default-features = false }
 
 [dependencies.rocket_contrib]

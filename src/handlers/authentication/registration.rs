@@ -14,7 +14,7 @@ pub fn registration(
     password: &str,
     db: database::DatabaseConnection,
 ) -> Result<(), RegistrationError> {
-    match database::authorization::registration(&*db, login, password) {
+    match database::authorization::save_credentials(&*db, login, password) {
         RegistrationOutcome::Ok => Ok(()),
         RegistrationOutcome::AlreadyInUse => Err(RegistrationError::LoginInUse),
         RegistrationOutcome::WeakPassword => Err(RegistrationError::WeakPassword),

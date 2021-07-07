@@ -5,6 +5,7 @@ use rocket_contrib::databases::diesel;
 use rocket_contrib::databases::mongodb;
 
 pub mod authorization;
+pub mod projects;
 
 #[database("user-related")]
 pub struct DatabaseConnection(diesel::PgConnection);

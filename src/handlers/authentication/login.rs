@@ -1,19 +1,25 @@
 use crate::database;
-use crate::database::AuthorizationOutcome;
+use crate::database::authorization::get_user::GetUserOutcome;
+use crate::database::authorization::token::CreateTokenOutcome;
 
 pub enum LoginError {
     NotFound,
     Other,
 }
 
-pub fn login(
+pub fn create_token(
     login: &str,
     password: &str,
     db: database::DatabaseConnection,
 ) -> Result<String, LoginError> {
-    match database::authorization::login(&*db, login, password) {
-        AuthorizationOutcome::Ok(s) => Ok(s),
-        AuthorizationOutcome::NotFound => Err(LoginError::NotFound),
-        AuthorizationOutcome::Other => Err(LoginError::Other),
+    match database::authorization::get_user::with_credentials(&*db, login, password) {
+        GetUserOutcome::Some(user) => {
+            match database::authorization::token::create_for_user(&*db, &user) {
+                CreateTokenOutcome::Ok(token) => Ok(token),
+                CreateTokenOutcome::Err => Err(LoginError::Other),
+            }
+        }
+        GetUserOutcome::None => Err(LoginError::NotFound),
+        GetUserOutcome::Error => Err(LoginError::Other),
     }
 }

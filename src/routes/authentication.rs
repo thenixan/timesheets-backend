@@ -18,7 +18,7 @@ pub fn login<'r>(
     db: database::DatabaseConnection,
 ) -> Result<Json<LoginResponse>, ErrorResponse<'r>> {
     let call_chain =
-        maybe_login_request.map(|r| authentication::login::login(r.login, r.password, db));
+        maybe_login_request.map(|r| authentication::login::create_token(r.login, r.password, db));
     return match call_chain {
         Some(Ok(token)) => {
             let login_response = LoginResponse::from(token);

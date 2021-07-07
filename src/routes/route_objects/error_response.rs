@@ -6,7 +6,7 @@ use rocket_contrib::json::Json;
 #[derive(Copy, Clone, Debug)]
 pub struct ErrorResponse<'a> {
     cause: &'a str,
-    status: Status,
+    pub status: Status,
 }
 
 impl<'r> Responder<'r> for ErrorResponse<'r> {
@@ -33,6 +33,10 @@ pub const ERROR_UNKNOWN: ErrorResponse = ErrorResponse {
 pub const ERROR_WRONG_REQUEST: ErrorResponse = ErrorResponse {
     cause: "wrong_request",
     status: Status::BadRequest,
+};
+pub const ERROR_UNAUTHORIZED: ErrorResponse = ErrorResponse {
+    cause: "unauthorized",
+    status: Status::Unauthorized,
 };
 
 // login error
