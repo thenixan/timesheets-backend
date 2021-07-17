@@ -15,6 +15,7 @@ impl TimesheetsRoutesInitialized for Rocket {
                 authentication::login,
                 authentication::registration,
                 projects::list_projects,
+                projects::new_project,
             ],
         )
         .register(catchers![unauthorized, unknown])

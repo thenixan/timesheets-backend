@@ -2,7 +2,10 @@ use rocket_contrib::json::Json;
 
 use crate::database::{projects, DocumentsStorage};
 use crate::routes::guards::authorized_user_id::AuthorizedUser;
-use crate::routes::route_objects::error_response::{ErrorResponse, ERROR_UNKNOWN};
+use crate::routes::route_objects::error_response::{
+    ErrorResponse, ERROR_UNKNOWN, ERROR_WRONG_REQUEST,
+};
+use crate::routes::route_objects::new_project_request::NewProjectRequest;
 use crate::routes::route_objects::projects_list_response::{
     ProjectListResponseItem, ProjectsListResponse,
 };
@@ -12,7 +15,7 @@ pub fn list_projects<'r>(
     user: AuthorizedUser,
     db: DocumentsStorage,
 ) -> Result<Json<ProjectsListResponse<String>>, ErrorResponse<'r>> {
-    match projects::list_projects(&user.user_id, &*db) {
+    match projects::get::list(&user.user_id, &*db) {
         Ok(rows) => {
             let result = ProjectsListResponse {
                 projects: rows
@@ -26,5 +29,21 @@ pub fn list_projects<'r>(
             Result::Ok(Json(result))
         }
         Err(_) => Result::Err(ERROR_UNKNOWN),
+    }
+}
+
+#[post("/projects", format = "json", data = "<maybe_new_project_request>")]
+pub fn new_project<'r>(
+    maybe_new_project_request: Option<Json<NewProjectRequest>>,
+    user: AuthorizedUser,
+    db: DocumentsStorage,
+) -> Result<(), ErrorResponse<'r>> {
+    if let Some(new_project_request) = maybe_new_project_request {
+        match projects::add::one(&user.user_id, new_project_request.name, &*db) {
+            Ok(_) => Result::Ok(()),
+            Err(_) => Result::Err(ERROR_UNKNOWN),
+        }
+    } else {
+        Result::Err(ERROR_WRONG_REQUEST)
     }
 }

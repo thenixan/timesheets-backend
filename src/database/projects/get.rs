@@ -2,20 +2,11 @@ use rocket_contrib::databases::mongodb::coll::options::FindOptions;
 use rocket_contrib::databases::mongodb::db::ThreadedDatabase;
 use rocket_contrib::databases::mongodb::spec::BinarySubtype;
 use rocket_contrib::databases::mongodb::{self, bson, doc, from_bson, Bson};
-use serde::Deserialize;
 use uuid::Uuid;
 
-#[derive(Deserialize, Debug)]
-pub struct ProjectListEntry {
-    #[serde(rename = "_id")]
-    pub id: bson::oid::ObjectId,
-    pub name: String,
-}
+use crate::database::projects::ProjectListEntry;
 
-pub fn list_projects(
-    user_id: &Uuid,
-    db: &mongodb::db::Database,
-) -> Result<Vec<ProjectListEntry>, ()> {
+pub fn list(user_id: &Uuid, db: &mongodb::db::Database) -> Result<Vec<ProjectListEntry>, ()> {
     let collection = db.collection("projects");
     let bson_user_id = Bson::Binary(BinarySubtype::Uuid, user_id.as_bytes().to_vec());
     let filter = doc! {"user_id": bson_user_id};
