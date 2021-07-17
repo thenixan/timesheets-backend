@@ -1,7 +1,6 @@
 use rocket::Rocket;
 
-use crate::routes::authentication;
-use crate::routes::projects;
+use crate::routes::{authentication, currencies, projects};
 use crate::routes::route_objects::error_response::{
     ERROR_UNAUTHORIZED, ERROR_UNKNOWN, ErrorResponse,
 };
@@ -16,6 +15,7 @@ impl TimesheetsRoutesInitialized for Rocket {
                 authentication::registration,
                 projects::list_projects,
                 projects::new_project,
+                currencies::list_currencies,
             ],
         )
         .register(catchers![unauthorized, unknown])

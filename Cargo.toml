@@ -18,6 +18,7 @@ rand_core = { version = "0.6", features = ["std"] }
 base64 = "0.13.0"
 bson = "1.2.2"
 mongodb = { version = "1.2", features = ["sync"], default-features = false }
+rusty-money = { version = "0.4.1", features = ["iso", "crypto"] }
 
 [dependencies.rocket_contrib]
 version = "0.4.7"
